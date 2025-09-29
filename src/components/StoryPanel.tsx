@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../services/firebase';
 import './StoryPanel.css';
 
 interface StoryPanelProps {
@@ -6,29 +8,55 @@ interface StoryPanelProps {
   onNotificationUpdate?: (count: number) => void;
 }
 
-export const StoryPanel: React.FC<StoryPanelProps> = ({ onNotificationUpdate }) => {
+export const StoryPanel: React.FC<StoryPanelProps> = ({ currentUser, onNotificationUpdate }) => {
   const [story, setStory] = useState('');
 
-  // Load story from localStorage on mount
+  // Load story from Firestore in real-time
   useEffect(() => {
-    const savedStory = localStorage.getItem('questhelper-story');
-    if (savedStory) {
-      setStory(savedStory);
-    } else {
-      setStory('');
-    }
+    if (!currentUser?.uid) return;
 
-    // Dla powiadomień - zawsze 0 w trybie localStorage
+    const storyDocRef = doc(db, 'users', currentUser.uid, 'data', 'story');
+
+    // Real-time listener dla fabuły
+    const unsubscribe = onSnapshot(storyDocRef, (docSnapshot) => {
+      try {
+        if (docSnapshot.exists()) {
+          const storyData = docSnapshot.data();
+          setStory(storyData.content || '');
+        } else {
+          setStory('');
+        }
+      } catch (error) {
+        console.error('Błąd ładowania fabuły z Firestore:', error);
+        setStory('');
+      }
+    });
+
+    // Dla powiadomień - zawsze 0 (fabuła jest już w czasie rzeczywistym)
     if (onNotificationUpdate) {
       onNotificationUpdate(0);
     }
-  }, [onNotificationUpdate]);
 
-  // Save story to localStorage whenever story changes
-  const handleStoryChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // Cleanup listener przy odmontowaniu komponentu
+    return () => unsubscribe();
+  }, [currentUser?.uid]); // Uruchamia się przy zmianie użytkownika
+
+  // Save story to Firestore whenever story changes
+  const handleStoryChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newStory = e.target.value;
     setStory(newStory);
-    localStorage.setItem('questhelper-story', newStory);
+
+    if (!currentUser?.uid) return;
+
+    try {
+      const storyDocRef = doc(db, 'users', currentUser.uid, 'data', 'story');
+      await setDoc(storyDocRef, {
+        content: newStory,
+        lastModified: new Date()
+      });
+    } catch (error) {
+      console.error('Błąd zapisywania fabuły do Firestore:', error);
+    }
   };
 
   return (
@@ -46,7 +74,7 @@ export const StoryPanel: React.FC<StoryPanelProps> = ({ onNotificationUpdate }) 
           onChange={handleStoryChange}
         />
         <div className="story-footer">
-          <small>Fabuła jest automatycznie zapisywana lokalnie</small>
+          <small>Fabuła jest automatycznie zapisywana w chmurze</small>
         </div>
       </div>
     </div>

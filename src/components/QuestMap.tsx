@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { pl } from 'date-fns/locale';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../services/firebase';
 import QuestNode from './QuestNode';
 import ConnectionLines from './ConnectionLines';
 import './QuestMap.css';
@@ -40,34 +42,45 @@ export const QuestMap: React.FC<QuestMapProps> = ({ currentUser, onNotificationU
 
   const [quests, setQuests] = useState<Record<string, Quest>>({});
 
-  // Ładuj questy z localStorage przy montowaniu komponentu
+  // Ładuj questy z Firestore w czasie rzeczywistym
   useEffect(() => {
-    const savedQuests = localStorage.getItem('questhelper-quests');
-    if (savedQuests) {
+    if (!currentUser?.uid) return;
+
+    const questsDocRef = doc(db, 'users', currentUser.uid, 'data', 'quests');
+
+    // Real-time listener dla questów
+    const unsubscribe = onSnapshot(questsDocRef, (docSnapshot) => {
       try {
-        const parsedQuests = JSON.parse(savedQuests);
-        // Konwertuj daty z string na Date objects
-        Object.values(parsedQuests).forEach((quest: any) => {
-          quest.createdAt = new Date(quest.createdAt);
-          quest.lastModifiedAt = new Date(quest.lastModifiedAt);
-          quest.editHistory = quest.editHistory?.map((entry: any) => ({
-            ...entry,
-            timestamp: new Date(entry.timestamp)
-          })) || [];
-        });
-        setQuests(parsedQuests);
+        if (docSnapshot.exists()) {
+          const questsData = docSnapshot.data();
+          const parsedQuests = questsData.quests || {};
+
+          // Konwertuj daty z string na Date objects
+          Object.values(parsedQuests).forEach((quest: any) => {
+            quest.createdAt = new Date(quest.createdAt);
+            quest.lastModifiedAt = new Date(quest.lastModifiedAt);
+            quest.editHistory = quest.editHistory?.map((entry: any) => ({
+              ...entry,
+              timestamp: new Date(entry.timestamp)
+            })) || [];
+          });
+          setQuests(parsedQuests);
+        } else {
+          setDefaultQuests();
+        }
       } catch (error) {
-        console.error('Błąd ładowania questów z localStorage:', error);
+        console.error('Błąd ładowania questów z Firestore:', error);
         setDefaultQuests();
       }
-    } else {
-      setDefaultQuests();
-    }
+    });
 
-    // Dla powiadomień - zawsze 0 w trybie localStorage
+    // Dla powiadomień - zawsze 0 (questy są już w czasie rzeczywistym)
     if (onNotificationUpdate) {
       onNotificationUpdate(0);
     }
+
+    // Cleanup listener przy odmontowaniu komponentu
+    return () => unsubscribe();
   }, [currentUser?.uid, onNotificationUpdate]);
 
   const setDefaultQuests = () => {
@@ -311,12 +324,24 @@ export const QuestMap: React.FC<QuestMapProps> = ({ currentUser, onNotificationU
     setShowEditor(true);
   };
 
-  // Automatyczne zapisywanie questów w localStorage
+  // Automatyczne zapisywanie questów w Firestore
   useEffect(() => {
-    if (Object.keys(quests).length === 0) return;
+    const saveQuests = async () => {
+      if (!currentUser?.uid || Object.keys(quests).length === 0) return;
 
-    localStorage.setItem('questhelper-quests', JSON.stringify(quests));
-  }, [quests]);
+      try {
+        const questsDocRef = doc(db, 'users', currentUser.uid, 'data', 'quests');
+        await setDoc(questsDocRef, {
+          quests,
+          lastModified: new Date()
+        });
+      } catch (error) {
+        console.error('Błąd zapisywania questów do Firestore:', error);
+      }
+    };
+
+    saveQuests();
+  }, [quests, currentUser?.uid]);
 
   return (
     <div className="quest-map-container">

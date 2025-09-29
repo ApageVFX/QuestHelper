@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../services/firebase';
 import './NotesPanel.css';
 
 interface NotesPanelProps {
@@ -7,21 +9,51 @@ interface NotesPanelProps {
   currentUser: any;
 }
 
-export const NotesPanel: React.FC<NotesPanelProps> = ({ isOpen, onToggle }) => {
+export const NotesPanel: React.FC<NotesPanelProps> = ({ isOpen, onToggle, currentUser }) => {
   const [notes, setNotes] = useState('');
 
-  // Load notes from localStorage on mount
+  // Load notes from Firestore on mount
   useEffect(() => {
-    const savedNotes = localStorage.getItem('questhelper-notes');
-    if (savedNotes) {
-      setNotes(savedNotes);
-    }
-  }, []);
+    const loadNotes = async () => {
+      if (!currentUser?.uid) return;
 
-  // Save notes to localStorage whenever notes change
+      try {
+        const notesDocRef = doc(db, 'users', currentUser.uid, 'data', 'notes');
+        const notesDoc = await getDoc(notesDocRef);
+
+        if (notesDoc.exists()) {
+          const notesData = notesDoc.data();
+          setNotes(notesData.content || '');
+        } else {
+          setNotes('');
+        }
+      } catch (error) {
+        console.error('Błąd ładowania notatek z Firestore:', error);
+        setNotes('');
+      }
+    };
+
+    loadNotes();
+  }, [currentUser?.uid]);
+
+  // Save notes to Firestore whenever notes change
   useEffect(() => {
-    localStorage.setItem('questhelper-notes', notes);
-  }, [notes]);
+    const saveNotes = async () => {
+      if (!currentUser?.uid) return;
+
+      try {
+        const notesDocRef = doc(db, 'users', currentUser.uid, 'data', 'notes');
+        await setDoc(notesDocRef, {
+          content: notes,
+          lastModified: new Date()
+        });
+      } catch (error) {
+        console.error('Błąd zapisywania notatek do Firestore:', error);
+      }
+    };
+
+    saveNotes();
+  }, [notes, currentUser?.uid]);
 
   return (
     <>
@@ -49,7 +81,7 @@ export const NotesPanel: React.FC<NotesPanelProps> = ({ isOpen, onToggle }) => {
             onChange={(e) => setNotes(e.target.value)}
           />
           <div className="notes-footer">
-            <small>Notatki są automatycznie zapisywane lokalnie</small>
+            <small>Notatki są automatycznie zapisywane w chmurze</small>
           </div>
         </div>
       </div>

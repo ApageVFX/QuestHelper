@@ -126,30 +126,235 @@
 }
 
 /* Responsive design */
+@media (max-width: 1400px) {
+  .questline-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .questline-header h2 {
+    font-size: 26px;
+  }
+
+  .add-questline-btn {
+    padding: 11px 22px;
+    font-size: 15px;
+  }
+}
+
 @media (max-width: 1200px) {
   .questline-grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .questline-list-container {
+    padding: 18px;
+  }
+
+  .questline-header h2 {
+    font-size: 24px;
+  }
+
+  .add-questline-btn {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 }
 
 @media (max-width: 900px) {
   .questline-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .questline-list-container {
+    padding: 16px;
+  }
+
+  .questline-header {
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+  }
+
+  .questline-header h2 {
+    font-size: 22px;
+  }
+
+  .add-questline-btn {
+    padding: 9px 18px;
+    font-size: 13px;
+  }
+
+  .questline-card {
+    padding: 18px;
+  }
+
+  .questline-card-header h3 {
+    font-size: 17px;
+  }
+
+  .questline-description {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .questline-list-container {
+    padding: 14px;
+    min-height: calc(100vh - 100px);
+  }
+
+  .questline-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .questline-header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+  }
+
+  .questline-header h2 {
+    font-size: 20px;
+  }
+
+  .add-questline-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .questline-card {
+    padding: 16px;
+  }
+
+  .questline-card-header h3 {
+    font-size: 16px;
+  }
+
+  .questline-description {
+    font-size: 12px;
+  }
+
+  .quest-count {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+
+  .last-modified {
+    font-size: 11px;
   }
 }
 
 @media (max-width: 600px) {
   .questline-grid {
     grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .questline-list-container {
+    padding: 12px;
+    min-height: calc(100vh - 90px);
   }
 
   .questline-header {
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
     text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+  }
+
+  .questline-header h2 {
+    font-size: 18px;
   }
 
   .add-questline-btn {
     width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .questline-card {
+    padding: 15px;
+  }
+
+  .questline-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .questline-card-header h3 {
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  .quest-count {
+    align-self: flex-end;
+    font-size: 11px;
+  }
+
+  .questline-description {
+    font-size: 13px;
+    -webkit-line-clamp: 4;
+    margin-bottom: 12px;
+  }
+
+  .questline-meta {
+    padding-top: 8px;
+  }
+
+  .last-modified {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .questline-list-container {
+    padding: 10px;
+    min-height: calc(100vh - 80px);
+  }
+
+  .questline-header {
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+  }
+
+  .questline-header h2 {
+    font-size: 16px;
+  }
+
+  .add-questline-btn {
+    padding: 9px;
+    font-size: 13px;
+  }
+
+  .questline-grid {
+    gap: 12px;
+  }
+
+  .questline-card {
+    padding: 12px;
+  }
+
+  .questline-card-header h3 {
+    font-size: 15px;
+  }
+
+  .questline-description {
+    font-size: 12px;
+    -webkit-line-clamp: 3;
+    margin-bottom: 10px;
+  }
+
+  .quest-count {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+
+  .last-modified {
+    font-size: 10px;
   }
 }

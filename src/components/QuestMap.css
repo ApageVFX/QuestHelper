@@ -313,13 +313,256 @@
   color: #ecf0f1;
 }
 
-/* Mobile responsiveness */
+/* Tablet responsiveness */
+@media (max-width: 1024px) {
+  .editor-panel {
+    width: 320px;
+  }
+
+  .editor-overlay {
+    left: 320px;
+  }
+
+  .map-toolbar {
+    top: 15px;
+    left: 15px;
+  }
+
+  .add-quest-btn {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+}
+
 @media (max-width: 768px) {
   .editor-panel {
     width: 100%;
+    top: 60px;
+    height: calc(100vh - 60px);
   }
 
   .editor-overlay {
     left: 100%;
+    top: 60px;
+  }
+
+  .map-toolbar {
+    top: 10px;
+    left: 10px;
+  }
+
+  .add-quest-btn {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+
+  .editor-header {
+    padding: 15px;
+  }
+
+  .editor-header h3 {
+    font-size: 18px;
+  }
+
+  .editor-content {
+    padding: 15px;
+  }
+
+  .editor-content input,
+  .editor-content textarea,
+  .editor-content select {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .save-btn,
+  .cancel-btn {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .quest-navigation {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .nav-btn {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .quest-map-container {
+    height: calc(100vh - 70px);
+  }
+
+  .editor-panel {
+    top: 50px;
+    height: calc(100vh - 50px);
+  }
+
+  .editor-overlay {
+    top: 50px;
+  }
+
+  .map-toolbar {
+    top: 8px;
+    left: 8px;
+  }
+
+  .add-quest-btn {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+
+  .editor-header {
+    padding: 12px;
+  }
+
+  .editor-header h3 {
+    font-size: 16px;
+  }
+
+  .editor-content {
+    padding: 12px;
+  }
+
+  .editor-content label {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .editor-content input,
+  .editor-content textarea,
+  .editor-content select {
+    font-size: 16px;
+    padding: 8px;
+    margin-bottom: 12px;
+  }
+
+  .editor-actions {
+    margin-top: 15px;
+    gap: 8px;
+  }
+
+  .save-btn,
+  .cancel-btn {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .quest-navigation {
+    padding: 8px;
+    margin: 12px 0;
+  }
+
+  .nav-btn {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .edit-history h4 {
+    font-size: 15px;
+  }
+
+  .history-entry {
+    padding: 8px;
+  }
+
+  .history-action,
+  .history-user,
+  .history-time {
+    font-size: 11px;
+  }
+
+  .change-item {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quest-map-container {
+    height: calc(100vh - 65px);
+  }
+
+  .editor-panel {
+    top: 45px;
+    height: calc(100vh - 45px);
+  }
+
+  .editor-overlay {
+    top: 45px;
+  }
+
+  .map-toolbar {
+    top: 5px;
+    left: 5px;
+  }
+
+  .add-quest-btn {
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+
+  .editor-header {
+    padding: 10px;
+  }
+
+  .editor-header h3 {
+    font-size: 15px;
+  }
+
+  .editor-content {
+    padding: 10px;
+  }
+
+  .editor-content label {
+    font-size: 13px;
+  }
+
+  .editor-content input,
+  .editor-content textarea,
+  .editor-content select {
+    font-size: 16px;
+    padding: 6px;
+    margin-bottom: 10px;
+  }
+
+  .editor-actions {
+    margin-top: 12px;
+  }
+
+  .save-btn,
+  .cancel-btn {
+    font-size: 11px;
+    padding: 6px;
+  }
+
+  .quest-navigation {
+    padding: 6px;
+    margin: 10px 0;
+  }
+
+  .nav-btn {
+    font-size: 11px;
+    padding: 6px;
+  }
+
+  .edit-history h4 {
+    font-size: 14px;
+  }
+
+  .history-entry {
+    padding: 6px;
+  }
+
+  .history-action,
+  .history-user,
+  .history-time {
+    font-size: 10px;
+  }
+
+  .change-item {
+    font-size: 10px;
   }
 }

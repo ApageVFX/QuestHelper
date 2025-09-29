@@ -60,6 +60,19 @@ function App() {
     }));
   };
 
+  // Funkcja zwracająca kolor użytkownika na podstawie jego nazwy
+  const getUserColor = (userName: string) => {
+    const colors: { [key: string]: string } = {
+      'Apage': '#ffffff',  // Biały
+      'Devrena': '#3498db', // Niebieski
+      'Bocik': '#e74c3c',  // Czerwony
+      'Warrior1': '#27ae60', // Zielony
+      'Warrior2': '#2ecc71', // Zielony (odmiana)
+    };
+
+    return colors[userName] || '#3498db'; // Domyślny niebieski
+  };
+
   return (
     <AuthProvider>
       <div className="App">
@@ -109,12 +122,14 @@ function App() {
                   </button>
                 </div>
                 <div className="user-info">
-                  <span className="user-name">Zalogowany jako: {currentUser?.name}</span>
-                  <span className="user-role">({currentUser?.role})</span>
-                  <button onClick={handleLogout} className="logout-btn">
-                    Wyloguj
-                  </button>
-                </div>
+                   <span className="user-name" style={{ color: getUserColor(currentUser?.name || '') }}>
+                     Zalogowany jako: {currentUser?.name}
+                   </span>
+                   <span className="user-role">({currentUser?.role})</span>
+                   <button onClick={handleLogout} className="logout-btn">
+                     Wyloguj
+                   </button>
+                 </div>
               </div>
             </header>
 

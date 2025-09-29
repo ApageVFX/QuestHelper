@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../services/firebase';
 import type { NotesCategory } from '../types';
 import './NotesCategoriesList.css';
 
@@ -8,33 +10,44 @@ interface NotesCategoriesListProps {
   onNotificationUpdate?: (count: number) => void;
 }
 
-export const NotesCategoriesList: React.FC<NotesCategoriesListProps> = ({ onSelectCategory, onNotificationUpdate }) => {
+export const NotesCategoriesList: React.FC<NotesCategoriesListProps> = ({ onSelectCategory, currentUser, onNotificationUpdate }) => {
   const [categories, setCategories] = useState<Record<string, NotesCategory>>({});
 
-  // Ładuj kategorie notatek z localStorage przy montowaniu komponentu
+  // Ładuj kategorie notatek z Firestore w czasie rzeczywistym
   useEffect(() => {
-    const savedCategories = localStorage.getItem('questhelper-notes-categories');
-    if (savedCategories) {
+    if (!currentUser?.uid) return;
+
+    const categoriesDocRef = doc(db, 'users', currentUser.uid, 'data', 'notes-categories');
+
+    // Real-time listener dla kategorii notatek
+    const unsubscribe = onSnapshot(categoriesDocRef, (docSnapshot) => {
       try {
-        const parsedCategories = JSON.parse(savedCategories);
-        // Konwertuj daty z string na Date objects
-        Object.values(parsedCategories).forEach((category: any) => {
-          category.lastModified = new Date(category.lastModified);
-        });
-        setCategories(parsedCategories);
+        if (docSnapshot.exists()) {
+          const categoriesData = docSnapshot.data();
+          const parsedCategories = categoriesData.categories || {};
+
+          // Konwertuj daty z string na Date objects
+          Object.values(parsedCategories).forEach((category: any) => {
+            category.lastModified = new Date(category.lastModified);
+          });
+          setCategories(parsedCategories);
+        } else {
+          setDefaultCategories();
+        }
       } catch (error) {
-        console.error('Błąd ładowania kategorii notatek z localStorage:', error);
+        console.error('Błąd ładowania kategorii notatek z Firestore:', error);
         setDefaultCategories();
       }
-    } else {
-      setDefaultCategories();
-    }
+    });
 
-    // Dla powiadomień - zawsze 0 w trybie localStorage
+    // Dla powiadomień - zawsze 0 (kategorie są już w czasie rzeczywistym)
     if (onNotificationUpdate) {
       onNotificationUpdate(0);
     }
-  }, [onNotificationUpdate]);
+
+    // Cleanup listener przy odmontowaniu komponentu
+    return () => unsubscribe();
+  }, [currentUser?.uid, onNotificationUpdate]);
 
   const setDefaultCategories = () => {
     const defaultCategories: Record<string, NotesCategory> = {
@@ -50,9 +63,19 @@ export const NotesCategoriesList: React.FC<NotesCategoriesListProps> = ({ onSele
     setCategories(defaultCategories);
   };
 
-  // Zapisz kategorie w localStorage
-  const saveCategories = (updatedCategories: Record<string, NotesCategory>) => {
-    localStorage.setItem('questhelper-notes-categories', JSON.stringify(updatedCategories));
+  // Zapisz kategorie w Firestore
+  const saveCategories = async (updatedCategories: Record<string, NotesCategory>) => {
+    if (!currentUser?.uid) return;
+
+    try {
+      const categoriesDocRef = doc(db, 'users', currentUser.uid, 'data', 'notes-categories');
+      await setDoc(categoriesDocRef, {
+        categories: updatedCategories,
+        lastModified: new Date()
+      });
+    } catch (error) {
+      console.error('Błąd zapisywania kategorii notatek do Firestore:', error);
+    }
   };
 
   // Dodaj nową kategorię
@@ -69,7 +92,6 @@ export const NotesCategoriesList: React.FC<NotesCategoriesListProps> = ({ onSele
 
     const updatedCategories = { ...categories, [newId]: newCategory };
     setCategories(updatedCategories);
-    saveCategories(updatedCategories);
   };
 
   // Automatyczne zapisywanie przy każdej zmianie
@@ -77,7 +99,7 @@ export const NotesCategoriesList: React.FC<NotesCategoriesListProps> = ({ onSele
     if (Object.keys(categories).length > 0) {
       saveCategories(categories);
     }
-  }, [categories]);
+  }, [categories, currentUser?.uid]);
 
   return (
     <div className="notes-categories-container">

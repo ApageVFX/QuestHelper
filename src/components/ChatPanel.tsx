@@ -10,12 +10,6 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-interface FirebaseChatMessage {
-  user: string;
-  message: string;
-  timestamp: string;
-}
-
 interface ChatPanelProps {
   currentUser: any;
   isOpen: boolean;
@@ -27,25 +21,32 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ currentUser, isOpen, onTog
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom when new messages arrive
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  // Funkcja zwracająca kolor użytkownika na podstawie jego nazwy
+  const getUserColor = (userName: string) => {
+    const colors: { [key: string]: string } = {
+      'Apage': '#ffffff',  // Biały
+      'Devrena': '#3498db', // Niebieski
+      'Bocik': '#e74c3c',  // Czerwony
+      'Warrior1': '#27ae60', // Zielony
+      'Warrior2': '#2ecc71', // Zielony (odmiana)
+    };
 
-  // Listen for messages from Firebase Realtime Database
+    return colors[userName] || '#3498db'; // Domyślny niebieski
+  };
+
+  // Load messages from Firebase Realtime Database
   useEffect(() => {
     const messagesRef = ref(realtimeDb, 'chat/messages');
 
     onValue(messagesRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const messagesArray = Object.values(data).map((msg: any, index: number) => ({
-          id: Object.keys(data)[index], // Use Firebase key as ID
-          user: msg.user,
-          message: msg.message,
-          timestamp: new Date(msg.timestamp)
-        })) as ChatMessage[];
-
+        const messagesArray = Object.entries(data).map(([key, value]: [string, any]) => ({
+          id: key,
+          user: value.user,
+          message: value.message,
+          timestamp: new Date(value.timestamp)
+        }));
         // Sort by timestamp
         messagesArray.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
         setMessages(messagesArray);
@@ -54,23 +55,26 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ currentUser, isOpen, onTog
       }
     });
 
-    // Cleanup listener on unmount
     return () => {
       off(messagesRef);
     };
   }, []);
 
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const sendMessage = () => {
     if (newMessage.trim() && currentUser) {
-      const messagesRef = ref(realtimeDb, 'chat/messages');
-      const message: FirebaseChatMessage = {
-        user: currentUser.displayName || currentUser.email || 'Użytkownik',
+      const messageData = {
+        user: currentUser.name || currentUser.email || 'Użytkownik',
         message: newMessage.trim(),
         timestamp: new Date().toISOString()
       };
 
-      // Push to Firebase (it will generate its own ID)
-      push(messagesRef, message);
+      const messagesRef = ref(realtimeDb, 'chat/messages');
+      push(messagesRef, messageData);
       setNewMessage('');
     }
   };
@@ -109,7 +113,9 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ currentUser, isOpen, onTog
             messages.map(message => (
               <div key={message.id} className="chat-message">
                 <div className="message-header">
-                  <span className="message-user">{message.user}</span>
+                  <span className="message-user" style={{ color: getUserColor(message.user) }}>
+                    {message.user}
+                  </span>
                   <span className="message-time">
                     {message.timestamp.toLocaleTimeString('pl-PL', {
                       hour: '2-digit',

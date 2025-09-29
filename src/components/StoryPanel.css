@@ -10,13 +10,13 @@
 }
 
 .story-header h2 {
-  color: #2c3e50;
+  color: #ffffff;
   margin-bottom: 8px;
   font-size: 1.5rem;
 }
 
 .story-header p {
-  color: #7f8c8d;
+  color: #b8c5d6;
   margin: 0;
   font-size: 0.9rem;
 }
@@ -30,7 +30,7 @@
 .story-textarea {
   flex: 1;
   padding: 15px;
-  border: 2px solid #ecf0f1;
+  border: 2px solid #5a6c82;
   border-radius: 8px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 1rem;
@@ -38,16 +38,17 @@
   resize: none;
   outline: none;
   transition: border-color 0.3s ease;
-  background-color: #fdfdfe;
+  background-color: #4a5a6a;
+  color: #ffffff;
 }
 
 .story-textarea:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: #5dade2;
+  box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.2);
 }
 
 .story-textarea::placeholder {
-  color: #bdc3c7;
+  color: #a8b4c2;
   font-style: italic;
 }
 
@@ -59,6 +60,138 @@
 .story-footer small {
   color: #95a5a6;
   font-size: 0.8rem;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .story-panel-container {
+    padding: 18px;
+  }
+
+  .story-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .story-textarea {
+    font-size: 0.95rem;
+    padding: 14px;
+  }
+}
+
+@media (max-width: 992px) {
+  .story-panel-container {
+    padding: 16px;
+  }
+
+  .story-header {
+    margin-bottom: 18px;
+  }
+
+  .story-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .story-header p {
+    font-size: 0.85rem;
+  }
+
+  .story-textarea {
+    font-size: 0.9rem;
+    padding: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .story-panel-container {
+    padding: 14px;
+  }
+
+  .story-header {
+    margin-bottom: 16px;
+  }
+
+  .story-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .story-header p {
+    font-size: 0.8rem;
+  }
+
+  .story-textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 12px;
+  }
+
+  .story-footer {
+    margin-top: 8px;
+  }
+
+  .story-footer small {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .story-panel-container {
+    padding: 12px;
+  }
+
+  .story-header {
+    margin-bottom: 14px;
+  }
+
+  .story-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .story-header p {
+    font-size: 0.75rem;
+  }
+
+  .story-textarea {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .story-footer {
+    margin-top: 6px;
+  }
+
+  .story-footer small {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .story-panel-container {
+    padding: 10px;
+  }
+
+  .story-header {
+    margin-bottom: 12px;
+  }
+
+  .story-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .story-header p {
+    font-size: 0.7rem;
+  }
+
+  .story-textarea {
+    font-size: 16px;
+    padding: 8px;
+  }
+
+  .story-footer {
+    margin-top: 5px;
+  }
+
+  .story-footer small {
+    font-size: 0.65rem;
+  }
 }
 
 /* Dark mode support */

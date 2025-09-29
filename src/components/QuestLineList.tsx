@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../services/firebase';
 import type { QuestLine } from '../types';
 import './QuestLineList.css';
 
@@ -8,33 +10,44 @@ interface QuestLineListProps {
   onNotificationUpdate?: (count: number) => void;
 }
 
-export const QuestLineList: React.FC<QuestLineListProps> = ({ onSelectQuestLine, onNotificationUpdate }) => {
+export const QuestLineList: React.FC<QuestLineListProps> = ({ onSelectQuestLine, currentUser, onNotificationUpdate }) => {
   const [questLines, setQuestLines] = useState<Record<string, QuestLine>>({});
 
-  // Ładuj questline'y z localStorage przy montowaniu komponentu
+  // Ładuj questline'y z Firestore w czasie rzeczywistym
   useEffect(() => {
-    const savedQuestLines = localStorage.getItem('questhelper-questlines');
-    if (savedQuestLines) {
+    if (!currentUser?.uid) return;
+
+    const questLinesDocRef = doc(db, 'users', currentUser.uid, 'data', 'questlines');
+
+    // Real-time listener dla questline'ów
+    const unsubscribe = onSnapshot(questLinesDocRef, (docSnapshot) => {
       try {
-        const parsedQuestLines = JSON.parse(savedQuestLines);
-        // Konwertuj daty z string na Date objects
-        Object.values(parsedQuestLines).forEach((questLine: any) => {
-          questLine.lastModified = new Date(questLine.lastModified);
-        });
-        setQuestLines(parsedQuestLines);
+        if (docSnapshot.exists()) {
+          const questLinesData = docSnapshot.data();
+          const parsedQuestLines = questLinesData.questlines || {};
+
+          // Konwertuj daty z string na Date objects
+          Object.values(parsedQuestLines).forEach((questLine: any) => {
+            questLine.lastModified = new Date(questLine.lastModified);
+          });
+          setQuestLines(parsedQuestLines);
+        } else {
+          setDefaultQuestLines();
+        }
       } catch (error) {
-        console.error('Błąd ładowania questline\'ów z localStorage:', error);
+        console.error('Błąd ładowania questline\'ów z Firestore:', error);
         setDefaultQuestLines();
       }
-    } else {
-      setDefaultQuestLines();
-    }
+    });
 
-    // Dla powiadomień - zawsze 0 w trybie localStorage
+    // Dla powiadomień - zawsze 0 (questline'y są już w czasie rzeczywistym)
     if (onNotificationUpdate) {
       onNotificationUpdate(0);
     }
-  }, [onNotificationUpdate]);
+
+    // Cleanup listener przy odmontowaniu komponentu
+    return () => unsubscribe();
+  }, [currentUser?.uid, onNotificationUpdate]);
 
   const setDefaultQuestLines = () => {
     const defaultQuestLines: Record<string, QuestLine> = {
@@ -50,9 +63,19 @@ export const QuestLineList: React.FC<QuestLineListProps> = ({ onSelectQuestLine,
     setQuestLines(defaultQuestLines);
   };
 
-  // Zapisz questline'y w localStorage
-  const saveQuestLines = (updatedQuestLines: Record<string, QuestLine>) => {
-    localStorage.setItem('questhelper-questlines', JSON.stringify(updatedQuestLines));
+  // Zapisz questline'y w Firestore
+  const saveQuestLines = async (updatedQuestLines: Record<string, QuestLine>) => {
+    if (!currentUser?.uid) return;
+
+    try {
+      const questLinesDocRef = doc(db, 'users', currentUser.uid, 'data', 'questlines');
+      await setDoc(questLinesDocRef, {
+        questlines: updatedQuestLines,
+        lastModified: new Date()
+      });
+    } catch (error) {
+      console.error('Błąd zapisywania questline\'ów do Firestore:', error);
+    }
   };
 
   // Dodaj nowy questline
@@ -69,7 +92,6 @@ export const QuestLineList: React.FC<QuestLineListProps> = ({ onSelectQuestLine,
 
     const updatedQuestLines = { ...questLines, [newId]: newQuestLine };
     setQuestLines(updatedQuestLines);
-    saveQuestLines(updatedQuestLines);
   };
 
   // Automatyczne zapisywanie przy każdej zmianie
@@ -77,7 +99,7 @@ export const QuestLineList: React.FC<QuestLineListProps> = ({ onSelectQuestLine,
     if (Object.keys(questLines).length > 0) {
       saveQuestLines(questLines);
     }
-  }, [questLines]);
+  }, [questLines, currentUser?.uid]);
 
   return (
     <div className="questline-list-container">
