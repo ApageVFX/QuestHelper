@@ -1,0 +1,325 @@
+.quest-map-container {
+  position: relative;
+  width: 100vw;
+  height: calc(100vh - 80px); /* Subtract header height */
+  overflow: hidden;
+  background-color: #2c3e50;
+}
+
+.map-toolbar {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+}
+
+.add-quest-btn {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.add-quest-btn:hover {
+  background-color: #2980b9;
+}
+
+.quest-canvas {
+  position: relative;
+  width: 400vw; /* 4x większa szerokość */
+  height: 400vh; /* 4x większa wysokość */
+  background-image:
+    radial-gradient(circle, #34495e 1px, transparent 1px),
+    linear-gradient(to right, #2c3e50 1px, transparent 1px),
+    linear-gradient(to bottom, #2c3e50 1px, transparent 1px);
+  background-size: 20px 20px, 20px 20px, 20px 20px;
+  background-position: 0 0, 0 0, 0 0;
+  overflow: auto;
+  cursor: grab;
+  transition: transform 0.1s ease;
+}
+
+.quest-canvas:active {
+  cursor: grabbing;
+}
+
+.quest-canvas.zoomed {
+  /* Zoom będzie aplikowany przez JavaScript */
+}
+
+/* Left panel editor */
+.editor-panel {
+  position: fixed;
+  top: 80px; /* Below header */
+  left: 0;
+  width: 350px;
+  height: calc(100vh - 80px);
+  background-color: #34495e;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.editor-panel.open {
+  transform: translateX(0);
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid #3498db;
+}
+
+.editor-header h3 {
+  margin: 0;
+  color: #ecf0f1;
+}
+
+.close-editor-btn {
+  background: none;
+  border: none;
+  color: #ecf0f1;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.close-editor-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.editor-content {
+  padding: 20px;
+}
+
+.editor-content label {
+  display: block;
+  margin-bottom: 8px;
+  color: #ecf0f1;
+  font-weight: bold;
+}
+
+.editor-content input,
+.editor-content textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.editor-content input:focus,
+.editor-content textarea:focus {
+  outline: none;
+  border: 2px solid #3498db;
+}
+
+.editor-content textarea {
+  min-height: 80px;
+}
+
+.editor-content input[type="color"] {
+  height: 40px;
+  cursor: pointer;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.save-btn,
+.cancel-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.save-btn {
+  background-color: #27ae60;
+  color: #fff;
+}
+
+.save-btn:hover {
+  background-color: #229954;
+}
+
+.cancel-btn {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.cancel-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Overlay for closing editor */
+.editor-overlay {
+  position: fixed;
+  top: 80px;
+  left: 350px;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 99;
+  transition: opacity 0.3s ease;
+}
+
+/* Quest navigation buttons */
+.quest-navigation {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  padding: 10px;
+  background-color: #2c3e50;
+  border-radius: 4px;
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+  color: #ecf0f1;
+}
+
+.prev-btn {
+  background-color: #7f8c8d;
+}
+
+.prev-btn:hover {
+  background-color: #95a5a6;
+}
+
+.next-btn {
+  background-color: #3498db;
+}
+
+.next-btn:hover {
+  background-color: #2980b9;
+}
+
+/* Status and connection selects */
+.editor-content select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.editor-content select:focus {
+  outline: none;
+  border: 2px solid #3498db;
+}
+
+.editor-content select option {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+}
+
+/* Edit history */
+.edit-history {
+  margin-top: 20px;
+  border-top: 1px solid #7f8c8d;
+  padding-top: 15px;
+}
+
+.edit-history h4 {
+  margin: 0 0 15px 0;
+  color: #ecf0f1;
+  font-size: 16px;
+}
+
+.history-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.history-entry {
+  background-color: #2c3e50;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.history-action {
+  font-weight: bold;
+  color: #3498db;
+  text-transform: capitalize;
+}
+
+.history-user {
+  color: #95a5a6;
+  font-size: 12px;
+}
+
+.history-time {
+  color: #7f8c8d;
+  font-size: 12px;
+}
+
+.history-changes {
+  border-top: 1px solid #7f8c8d;
+  padding-top: 5px;
+  margin-top: 5px;
+}
+
+.change-item {
+  font-size: 12px;
+  color: #bdc3c7;
+  margin-bottom: 2px;
+}
+
+.change-item strong {
+  color: #ecf0f1;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .editor-panel {
+    width: 100%;
+  }
+
+  .editor-overlay {
+    left: 100%;
+  }
+}

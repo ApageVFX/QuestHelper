@@ -1,0 +1,230 @@
+.quest-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #1a1a1a;
+}
+
+.editor-toolbar {
+  background-color: #34495e;
+  padding: 1rem 2rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  border-bottom: 2px solid #3498db;
+}
+
+.add-quest-btn {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.add-quest-btn:hover {
+  background-color: #2980b9;
+}
+
+.quest-map-container {
+  flex: 1;
+  position: relative;
+  background-color: #2c3e50;
+  overflow: auto;
+  min-height: 600px;
+  padding: 20px;
+  background-image:
+    radial-gradient(circle, #34495e 1px, transparent 1px),
+    linear-gradient(to right, #2c3e50 1px, transparent 1px),
+    linear-gradient(to bottom, #2c3e50 1px, transparent 1px);
+  background-size: 20px 20px, 20px 20px, 20px 20px;
+  background-position: 0 0, 0 0, 0 0;
+}
+
+.quest-editor-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.editor-content {
+  background-color: #34495e;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  min-width: 400px;
+  max-width: 600px;
+  border: 2px solid #3498db;
+}
+
+.editor-content h3 {
+  margin-top: 0;
+  color: #ecf0f1;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.editor-content label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ecf0f1;
+  font-weight: bold;
+}
+
+.editor-content input,
+.editor-content textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.editor-content input:focus,
+.editor-content textarea:focus {
+  outline: none;
+  border: 2px solid #3498db;
+}
+
+.editor-content textarea {
+  min-height: 100px;
+}
+
+.editor-content input[type="color"] {
+  height: 50px;
+  cursor: pointer;
+}
+
+.editor-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.save-btn,
+.cancel-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.save-btn {
+  background-color: #27ae60;
+  color: #fff;
+}
+
+.save-btn:hover {
+  background-color: #229954;
+}
+
+.cancel-btn {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.cancel-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Quest Navigation Styles */
+.quest-navigation {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid #2c3e50;
+}
+
+.navigation-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.nav-label {
+  font-size: 0.9rem;
+  color: #bdc3c7;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nav-btn {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.nav-btn:disabled {
+  background-color: #34495e;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.prev-btn {
+  background-color: #e67e22;
+}
+
+.prev-btn:hover:not(:disabled) {
+  background-color: #d35400;
+}
+
+.next-btn {
+  background-color: #27ae60;
+}
+
+.next-btn:hover:not(:disabled) {
+  background-color: #229954;
+}
+
+/* Responsive navigation */
+@media (max-width: 600px) {
+  .nav-btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .nav-label {
+    font-size: 0.8rem;
+  }
+}
